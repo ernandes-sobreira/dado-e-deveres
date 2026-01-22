@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dado & Deveres — Sorteio Universitário</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:rgba(255,255,255,.08);
+      --card2:rgba(255,255,255,.12);
+      --text:#eef2ff;
+      --muted:rgba(238,242,255,.72);
+      --line:rgba(255,255,255,.14);
+      --shadow:0 18px 50px rgba(0,0,0,.45);
+      --r:18px;
+
+      --a:#ff6b00; /* laranja */
+      --b:#ff2d55; /* vermelho */
+      --c:#2dd4ff; /* azul */
+      --d:#a3ff5f; /* verde */
+      --e:#a78bfa; /* roxo */
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background:
+        radial-gradient(1200px 800px at 12% 10%, rgba(255,107,0,.25), transparent 55%),
+        radial-gradient(1000px 700px at 88% 18%, rgba(45,212,255,.22), transparent 55%),
+        radial-gradient(900px 700px at 45% 92%, rgba(255,45,85,.18), transparent 60%),
+        radial-gradient(900px 600px at 72% 78%, rgba(163,255,95,.12), transparent 60%),
+        linear-gradient(180deg, #070a16 0%, #0b1020 70%, #070a16 100%);
+      color:var(--text);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .wrap{max-width:1100px; margin:0 auto; padding:22px 16px 80px;}
+    header{
+      display:flex; gap:14px; align-items:flex-start; justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(22px, 3vw, 34px);
+      letter-spacing:.3px;
+      line-height:1.1;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      max-width:66ch;
+      font-size:14px;
+    }
+
+    .pillbar{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end;
+    }
+    .pill{
+      padding:10px 12px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border-radius:999px;
+      box-shadow:var(--shadow);
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      user-select:none;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background:var(--c);
+      box-shadow: 0 0 0 4px rgba(45,212,255,.14);
+    }
+
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:15px;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .badge{
+      font-size:11px;
+      color:rgba(255,255,255,.85);
+      border:1px solid rgba(255,255,255,.18);
+      padding:4px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+    }
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .col{display:flex; flex-direction:column; gap:8px;}
+    label{font-size:12px; color:var(--muted);}
+    input[type="text"], textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      padding:10px 12px;
+      outline:none;
+    }
+    textarea{min-height:96px; resize:vertical; line-height:1.4;}
+    input[type="text"]::placeholder, textarea::placeholder{color:rgba(238,242,255,.45)}
+
+    .btn{
+      border:1px solid rgba(255,255,255,.16);
+      background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.07));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, filter .08s ease;
+      font-weight:650;
+      letter-spacing:.2px;
+    }
+    .btn:active{transform: translateY(1px) scale(.99);}
+    .btn:hover{filter:brightness(1.06);}
+
+    .btn.primary{
+      border-color: rgba(255,107,0,.55);
+      background:linear-gradient(180deg, rgba(255,107,0,.36), rgba(255,45,85,.18));
+      box-shadow: 0 10px 30px rgba(255,107,0,.14);
+    }
+    .btn.secondary{
+      border-color: rgba(45,212,255,.55);
+      background:linear-gradient(180deg, rgba(45,212,255,.28), rgba(167,139,250,.12));
+      box-shadow: 0 10px 30px rgba(45,212,255,.12);
+    }
+    .btn.ghost{
+      background:rgba(255,255,255,.05);
+      border-color: rgba(255,255,255,.14);
+      color:rgba(238,242,255,.9);
+      font-weight:600;
+    }
+    .btn.danger{
+      border-color: rgba(255,45,85,.55);
+      background:linear-gradient(180deg, rgba(255,45,85,.26), rgba(0,0,0,.08));
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 560px){
+      .split{grid-template-columns: 1fr;}
+    }
+
+    .diceStage{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      align-items:center;
+      justify-items:center;
+      padding: 8px 8px 4px;
+      position:relative;
+    }
+
+    .diceWrap{
+      width:min(320px, 90vw);
+      aspect-ratio: 1 / 1;
+      border-radius: 26px;
+      border:1px solid rgba(255,255,255,.16);
+      background:
+        radial-gradient(140px 110px at 30% 20%, rgba(255,255,255,.18), transparent 60%),
+        radial-gradient(160px 140px at 75% 80%, rgba(45,212,255,.14), transparent 65%),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.18));
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .dice{
+      width: 210px;
+      height: 210px;
+      border-radius: 32px;
+      background:
+        radial-gradient(120px 90px at 28% 22%, rgba(255,255,255,.25), transparent 65%),
+        linear-gradient(180deg, rgba(255,255,255,.18), rgba(0,0,0,.22));
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      position:relative;
+      transform: translateZ(0);
+    }
+
+    .pip{
+      position:absolute;
+      width:22px; height:22px;
+      border-radius:50%;
+      background:rgba(238,242,255,.94);
+      box-shadow:
+        0 8px 20px rgba(0,0,0,.35),
+        0 0 0 6px rgba(255,255,255,.06);
+      opacity:0;
+    }
+
+    /* posições em uma grade 3x3 */
+    .p1{left:50%; top:50%; transform:translate(-50%,-50%);}
+    .p2{left:22%; top:22%;}
+    .p3{right:22%; top:22%;}
+    .p4{left:22%; top:50%; transform:translateY(-50%);}
+    .p5{right:22%; top:50%; transform:translateY(-50%);}
+    .p6{left:22%; bottom:22%;}
+    .p7{right:22%; bottom:22%;}
+    .p8{left:50%; bottom:22%; transform:translateX(-50%);}
+    .p9{left:50%; top:22%; transform:translateX(-50%);}
+
+    .rolling .dice{
+      animation: roll 980ms cubic-bezier(.12,.86,.24,1) both;
+    }
+    @keyframes roll{
+      0%{transform: rotate(0deg) scale(1);}
+      20%{transform: rotate(30deg) scale(1.02);}
+      40%{transform: rotate(-28deg) scale(1.03);}
+      60%{transform: rotate(42deg) scale(1.02);}
+      80%{transform: rotate(-18deg) scale(1.01);}
+      100%{transform: rotate(0deg) scale(1);}
+    }
+
+    .result{
+      width:100%;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      border-radius: 18px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .big{
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 850;
+      letter-spacing:.2px;
+      line-height:1.1;
+    }
+    .mini{
+      color:var(--muted);
+      font-size: 12px;
+    }
+
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .tab{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+      color:rgba(238,242,255,.85);
+    }
+    .tab.active{
+      border-color: rgba(255,107,0,.55);
+      background: rgba(255,107,0,.18);
+      box-shadow: 0 10px 30px rgba(255,107,0,.10);
+      color:rgba(255,255,255,.95);
+      font-weight:700;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: 290px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+    }
+    .item strong{font-size:13px;}
+    .item small{color:var(--muted); display:block; margin-top:2px;}
+    .item .actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+    .chk{
+      display:flex; gap:8px; align-items:center;
+      font-size:12px;
+      color:rgba(238,242,255,.85);
+      user-select:none;
+      white-space:nowrap;
+    }
+    input[type="checkbox"]{transform: translateY(1px) scale(1.08);}
+
+    .hr{height:1px; background:rgba(255,255,255,.12); margin:10px 0;}
+    .hint{color:var(--muted); font-size:12px; line-height:1.4;}
+    .kpi{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (max-width: 560px){
+      .kpi{grid-template-columns: 1fr;}
+    }
+    .k{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      padding:10px;
+      background: rgba(255,255,255,.06);
+    }
+    .k .v{font-weight:850; font-size:18px;}
+    .k .t{color:var(--muted); font-size:12px; margin-top:2px;}
+    .history{
+      max-height: 200px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .hist{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding:10px;
+      font-size:12px;
+      color: rgba(238,242,255,.92);
+    }
+    .stamp{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(238,242,255,.92);
+      font-size:12px;
+    }
+    .stamp i{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--a);
+      box-shadow: 0 0 0 4px rgba(255,107,0,.14);
+      display:inline-block;
+    }
+
+    footer{
+      margin-top:16px;
+      color:rgba(238,242,255,.55);
+      font-size:12px;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>🎲 Dado & Deveres — Sorteio Universitário</h1>
+        <p class="sub">
+          Um app leve pra brincar com a turma: você sorteia <b>pessoa</b>, <b>tarefa</b> ou <b>pessoa + tarefa</b>.
+          <b>O professor pode cair também</b>. Tudo salva no navegador (sem login, sem internet).
+        </p>
+      </div>
+      <div class="pillbar">
+        <div class="pill"><span class="dot"></span>Modo: <b id="modeLabel">Pessoa + Tarefa</b></div>
+        <div class="pill">💾 Salva automaticamente</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- ESQUERDA: DADO + RESULTADOS -->
+      <section class="card">
+        <h2>🎲 O dado decide <span class="badge" id="badgeFair">professor incluído ✅</span></h2>
+
+        <div class="tabs" role="tablist" aria-label="Modos">
+          <div class="tab" data-mode="person">👥 Sortear pessoa</div>
+          <div class="tab" data-mode="task">🧩 Sortear tarefa</div>
+          <div class="tab active" data-mode="both">🔥 Pessoa + tarefa</div>
+        </div>
+
+        <div class="diceStage">
+          <div class="diceWrap" id="diceWrap">
+            <div class="dice" id="dice">
+              <span class="pip p1"></span>
+              <span class="pip p2"></span>
+              <span class="pip p3"></span>
+              <span class="pip p4"></span>
+              <span class="pip p5"></span>
+              <span class="pip p6"></span>
+              <span class="pip p7"></span>
+              <span class="pip p8"></span>
+              <span class="pip p9"></span>
+            </div>
+          </div>
+
+          <div class="row" style="justify-content:center;">
+            <button class="btn primary" id="rollBtn">🎲 Rolar o dado</button>
+            <button class="btn ghost" id="reRollBtn" title="Rola de novo mantendo o modo">🔁 Rolar de novo</button>
+          </div>
+
+          <div class="result" aria-live="polite">
+            <div class="mini" id="diceInfo">Pronto. Escolha o modo e role.</div>
+            <div class="big" id="bigResult">—</div>
+            <div class="mini" id="smallResult">Dica: desmarque tarefas que você não quer hoje 😉</div>
+          </div>
+
+          <div class="kpi">
+            <div class="k">
+              <div class="v" id="kPeople">0</div>
+              <div class="t">pessoas no sorteio</div>
+            </div>
+            <div class="k">
+              <div class="v" id="kTasks">0</div>
+              <div class="t">tarefas ativas no sorteio</div>
+            </div>
+            <div class="k">
+              <div class="v" id="kHistory">0</div>
+              <div class="t">itens no histórico</div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <span class="stamp"><i></i>Regra: o sorteio é “sem choro” 😄</span>
+            <button class="btn danger" id="clearHistoryBtn" title="Apaga apenas o histórico seen perder listas">🧾 Limpar histórico</button>
+          </div>
+
+          <div class="history" id="history"></div>
+        </div>
+      </section>
+
+      <!-- DIREITA: CONFIGURAÇÕES -->
+      <section class="card">
+        <h2>⚙️ Configuração rápida <span class="badge">cole nomes e tarefas</span></h2>
+
+        <div class="split">
+          <div class="col">
+            <label>👨‍🏫 Nome do professor (opcional, mas recomendado)</label>
+            <input type="text" id="teacherName" placeholder="Ex: Prof. Ernandes" />
+            <div class="row">
+              <label class="chk">
+                <input type="checkbox" id="includeTeacher" />
+                Incluir professor no sorteio
+              </label>
+            </div>
+            <p class="hint">
+              Se você desmarcar “Incluir professor”, o app não coloca você no sorteio — mas você pode marcar de novo quando quiser.
+            </p>
+          </div>
+
+          <div class="col">
+            <label>👥 Pessoas (uma por linha) — pode colar uma lista inteira</label>
+            <textarea id="peopleInput" placeholder="Maria&#10;João&#10;Ana&#10;..." spellcheck="false"></textarea>
+            <div class="row">
+              <button class="btn secondary" id="applyPeopleBtn">✅ Aplicar lista</button>
+              <button class="btn ghost" id="clearPeopleBtn">🧹 Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="split">
+          <div class="col">
+            <label>🧩 Adicionar tarefa (aparece na lista e você decide se entra no sorteio)</label>
+            <input type="text" id="taskTitle" placeholder="Ex: Organizar bancada do microscópio" />
+            <input type="text" id="taskNote" placeholder="Detalhe (opcional): prazo, local, regra..." />
+            <div class="row">
+              <button class="btn secondary" id="addTaskBtn">➕ Adicionar</button>
+              <button class="btn ghost" id="resetDefaultsBtn" title="Restaura tarefas padrão (mantém pessoas)">↺ Restaurar padrão</button>
+            </div>
+            <p class="hint">
+              Você pode deixar várias tarefas “desligadas” e ligar só quando quiser tentar a sorte.  
+              Isso é exatamente o seu “se eu não quiser, eu não uso — mas posso tentar a sorte”.
+            </p>
+          </div>
+
+          <div class="col">
+            <label>📦 Exportar / Importar (pra levar pro celular ou outro PC)</label>
+            <div class="row">
+              <button class="btn ghost" id="exportBtn">⬇️ Exportar JSON</button>
+              <label class="btn ghost" for="importFile" style="cursor:pointer;">⬆️ Importar JSON</label>
+              <input type="file" id="importFile" accept="application/json" style="display:none;" />
+              <button class="btn danger" id="factoryResetBtn" title="Apaga tudo (pessoas, tarefas, histórico)">💣 Reset total</button>
+            </div>
+            <p class="hint">O JSON serve pra copiar sua turma e suas tarefas pra outro aparelho sem perder nada.</p>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <h2>📋 Tarefas (marque o que entra no sorteio) <span class="badge" id="tasksBadge">0 ativas</span></h2>
+        <div class="list" id="taskList"></div>
+
+        <div class="hr"></div>
+
+        <h2>👥 Pessoas (pool do sorteio) <span class="badge" id="peopleBadge">0 pessoas</span></h2>
+        <div class="list" id="peopleList"></div>
+
+        <footer>
+          Feito para uso em sala/lab/campo — divertido, leve e “sem drama”.
+        </footer>
+      </section>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  // --- Storage
+  const KEY = "dado_deveres_v1";
+  const nowISO = () => new Date().toISOString();
+
+  const defaultTasks = () => ([
+    { id: cryptoId(), title:"Irmão(ã) do Campo (hoje)", note:"Vai com o professor e ajuda na logística.", active:true },
+    { id: cryptoId(), title:"Check do laboratório (bancadas)", note:"Conferir se ficou limpo e organizado.", active:true },
+    { id: cryptoId(), title:"Organizar vidrarias (5 min)", note:"Separar/guardar o que está fora do lugar.", active:false },
+    { id: cryptoId(), title:"Regar mudas (semana)", note:"Checklist: água + luz + anotar observação.", active:true },
+    { id: cryptoId(), title:"Responsável pelo quadro/cronograma", note:"Atualizar atividades do dia.", active:false },
+    { id: cryptoId(), title:"Checagem de EPIs", note:"Luvas, óculos, jaleco: quem está sem?", active:true },
+    { id: cryptoId(), title:"Checagem de resíduos (descartar certo)", note:"Separar e orientar descarte correto.", active:true },
+    { id: cryptoId(), title:"Monitor do seminário-relâmpago", note:"Escolhe 1 pessoa pra falar 60s sobre algo aprendido.", active:true },
+    { id: cryptoId(), title:"Professor se ferra", note:"Professor lava 3 vidrarias + organiza 1 prateleira 😄", active:true },
+    { id: cryptoId(), title:"Dupla do suporte", note:"Ajudar quem travar no procedimento (sem fazer por).", active:true }
+  ]);
+
+  function cryptoId(){
+    // id curtinho e estável (sem libs)
+    return Math.random().toString(16).slice(2) + "-" + Math.random().toString(16).slice(2);
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){
+      return null;
+    }
+  }
+
+  function save(){
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  // --- State
+  let state = load() || {
+    teacherName: "",
+    includeTeacher: true,
+    people: [],
+    tasks: defaultTasks(),
+    mode: "both", // person | task | both
+    history: []
+  };
+
+  // --- Elements
+  const modeLabel = $("modeLabel");
+  const badgeFair = $("badgeFair");
+  const diceWrap = $("diceWrap");
+  const diceInfo = $("diceInfo");
+  const bigResult = $("bigResult");
+  const smallResult = $("smallResult");
+
+  const kPeople = $("kPeople");
+  const kTasks = $("kTasks");
+  const kHistory = $("kHistory");
+
+  const historyBox = $("history");
+  const clearHistoryBtn = $("clearHistoryBtn");
+
+  const teacherName = $("teacherName");
+  const includeTeacher = $("includeTeacher");
+
+  const peopleInput = $("peopleInput");
+  const applyPeopleBtn = $("applyPeopleBtn");
+  const clearPeopleBtn = $("clearPeopleBtn");
+
+  const taskTitle = $("taskTitle");
+  const taskNote = $("taskNote");
+  const addTaskBtn = $("addTaskBtn");
+  const resetDefaultsBtn = $("resetDefaultsBtn");
+
+  const tasksBadge = $("tasksBadge");
+  const peopleBadge = $("peopleBadge");
+
+  const taskList = $("taskList");
+  const peopleList = $("peopleList");
+
+  const rollBtn = $("rollBtn");
+  const reRollBtn = $("reRollBtn");
+
+  const exportBtn = $("exportBtn");
+  const importFile = $("importFile");
+  const factoryResetBtn = $("factoryResetBtn");
+
+  const tabs = Array.from(document.querySelectorAll(".tab"));
+
+  // --- Dice faces mapping (pips to show)
+  const pipEls = Array.from(document.querySelectorAll(".pip"));
+  const faces = {
+    1: ["p1"],
+    2: ["p2","p7"],
+    3: ["p2","p1","p7"],
+    4: ["p2","p3","p6","p7"],
+    5: ["p2","p3","p1","p6","p7"],
+    6: ["p2","p3","p4","p5","p6","p7"]
+  };
+
+  function setFace(n){
+    pipEls.forEach(p => p.style.opacity = 0);
+    const cls = faces[n] || faces[1];
+    cls.forEach(c => {
+      const el = document.querySelector("." + c);
+      if(el) el.style.opacity = 1;
+    });
+  }
+
+  // --- Helpers
+  function normalizeLines(text){
+    return text
+      .split(/\r?\n/)
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  function poolPeople(){
+    const base = [...state.people];
+    if(state.includeTeacher){
+      const t = (state.teacherName || "").trim();
+      if(t) base.push(t);
+      else base.push("Professor"); // fallback
+    }
+    // remove duplicates (case-insensitive)
+    const seen = new Set();
+    const out = [];
+    for(const name of base){
+      const k = name.toLowerCase();
+      if(seen.has(k)) continue;
+      seen.add(k);
+      out.push(name);
+    }
+    return out;
+  }
+
+  function poolTasks(){
+    return state.tasks.filter(t => t.active);
+  }
+
+  function pickRandom(arr){
+    if(!arr.length) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function prettyTime(iso){
+    const d = new Date(iso);
+    const pad = (n) => String(n).padStart(2,"0");
+    return `${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function pushHistory(entry){
+    state.history.unshift(entry);
+    // keep it light
+    state.history = state.history.slice(0, 20);
+    save();
+    renderHistory();
+    renderKPIs();
+  }
+
+  // --- Render
+  function renderMode(){
+    const map = { person:"Pessoa", task:"Tarefa", both:"Pessoa + Tarefa" };
+    modeLabel.textContent = map[state.mode] || "Pessoa + Tarefa";
+
+    tabs.forEach(t => t.classList.toggle("active", t.dataset.mode === state.mode));
+  }
+
+  function renderKPIs(){
+    kPeople.textContent = poolPeople().length;
+    kTasks.textContent = poolTasks().length;
+    kHistory.textContent = state.history.length;
+
+    const act = poolTasks().length;
+    tasksBadge.textContent = `${act} ativas`;
+    peopleBadge.textContent = `${poolPeople().length} pessoas`;
+  }
+
+  function renderHistory(){
+    historyBox.innerHTML = "";
+    if(!state.history.length){
+      const empty = document.createElement("div");
+      empty.className = "hist";
+      empty.textContent = "Sem histórico ainda. Role o dado e comece a brincadeira 🙂";
+      historyBox.appendChild(empty);
+      return;
+    }
+
+    state.history.forEach(h => {
+      const div = document.createElement("div");
+      div.className = "hist";
+      div.innerHTML = `<b>${h.title}</b><br><span style="color:rgba(238,242,255,.7)">${h.detail}</span><br><span style="color:rgba(238,242,255,.55)">${prettyTime(h.when)}</span>`;
+      historyBox.appendChild(div);
+    });
+  }
+
+  function renderTasks(){
+    taskList.innerHTML = "";
+    state.tasks.forEach(t => {
+      const row = document.createElement("div");
+      row.className = "item";
+      const left = document.createElement("div");
+      left.innerHTML = `<strong>${escapeHtml(t.title)}</strong>${t.note ? `<small>${escapeHtml(t.note)}</small>` : ""}`;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const chk = document.createElement("label");
+      chk.className = "chk";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!t.active;
+      cb.addEventListener("change", () => {
+        t.active = cb.checked;
+        save();
+        renderKPIs();
+      });
+      chk.appendChild(cb);
+      chk.appendChild(document.createTextNode("Entrar no sorteio"));
+
+      const del = document.createElement("button");
+      del.className = "btn ghost";
+      del.textContent = "🗑️";
+      del.title = "Remover tarefa";
+      del.addEventListener("click", () => {
+        state.tasks = state.tasks.filter(x => x.id !== t.id);
+        save();
+        renderTasks();
+        renderKPIs();
+      });
+
+      actions.appendChild(chk);
+      actions.appendChild(del);
+
+      row.appendChild(left);
+      row.appendChild(actions);
+      taskList.appendChild(row);
+    });
+  }
+
+  function renderPeople(){
+    peopleList.innerHTML = "";
+    const ppl = poolPeople();
+
+    if(!ppl.length){
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML = `<div><strong>Sem pessoas ainda</strong><small>Cole nomes no campo “Pessoas” e clique em “Aplicar lista”.</small></div>`;
+      peopleList.appendChild(row);
+      return;
+    }
+
+    ppl.forEach(name => {
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML = `<div><strong>${escapeHtml(name)}</strong><small>pool do sorteio</small></div>`;
+      peopleList.appendChild(row);
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+
+  function renderAll(){
+    teacherName.value = state.teacherName || "";
+    includeTeacher.checked = !!state.includeTeacher;
+    badgeFair.textContent = state.includeTeacher ? "professor incluído ✅" : "professor fora do sorteio ⚠️";
+
+    renderMode();
+    renderTasks();
+    renderPeople();
+    renderHistory();
+    renderKPIs();
+
+    // Face default
+    setFace(1);
+  }
+
+  // --- Actions
+  function doRoll(){
+    const ppl = poolPeople();
+    const tasks = poolTasks();
+
+    if(state.mode === "person" && ppl.length === 0){
+      bigResult.textContent = "⚠️ Sem pessoas no sorteio";
+      smallResult.textContent = "Cole nomes e aplique a lista.";
+      return;
+    }
+    if(state.mode === "task" && tasks.length === 0){
+      bigResult.textContent = "⚠️ Sem tarefas ativas";
+      smallResult.textContent = "Marque pelo menos 1 tarefa como “Entrar no sorteio”.";
+      return;
+    }
+    if(state.mode === "both" && (ppl.length === 0 || tasks.length === 0)){
+      bigResult.textContent = "⚠️ Falta gente ou tarefa";
+      smallResult.textContent = "Adicione pessoas e ative pelo menos 1 tarefa.";
+      return;
+    }
+
+    // roll animation
+    diceWrap.classList.add("rolling");
+    diceInfo.textContent = "Rolando...";
+    bigResult.textContent = "…";
+    smallResult.textContent = "O dado está decidindo seu destino.";
+
+    const steps = 14;
+    let i = 0;
+
+    const interval = setInterval(() => {
+      i++;
+      setFace(1 + Math.floor(Math.random() * 6));
+      if(i >= steps) clearInterval(interval);
+    }, 70);
+
+    setTimeout(() => {
+      diceWrap.classList.remove("rolling");
+      const final = 1 + Math.floor(Math.random() * 6);
+      setFace(final);
+
+      // Decide what to pick (using final just as "ceremonial"; selection remains random from pools)
+      const pickedPerson = (state.mode === "person" || state.mode === "both") ? pickRandom(ppl) : null;
+      const pickedTask = (state.mode === "task" || state.mode === "both") ? pickRandom(tasks) : null;
+
+      const modeName = state.mode === "person" ? "Sorteio de pessoa"
+                    : state.mode === "task" ? "Sorteio de tarefa"
+                    : "Pessoa + tarefa";
+
+      let title = "";
+      let detail = "";
+      if(state.mode === "person"){
+        title = `👥 ${pickedPerson}`;
+        detail = `Dado: ${final}. ${modeName}.`;
+      } else if(state.mode === "task"){
+        title = `🧩 ${pickedTask.title}`;
+        detail = `Dado: ${final}. ${pickedTask.note ? pickedTask.note + " — " : ""}${modeName}.`;
+      } else {
+        title = `🔥 ${pickedPerson} → ${pickedTask.title}`;
+        detail = `Dado: ${final}. ${pickedTask.note ? pickedTask.note + " — " : ""}${modeName}.`;
+      }
+
+      diceInfo.textContent = `Dado caiu em ${final}.`;
+      bigResult.textContent = title;
+      smallResult.textContent = detail;
+
+      pushHistory({ when: nowISO(), title, detail });
+    }, 980);
+  }
+
+  // --- Events
+  tabs.forEach(t => {
+    t.addEventListener("click", () => {
+      state.mode = t.dataset.mode;
+      save();
+      renderMode();
+    });
+  });
+
+  rollBtn.addEventListener("click", doRoll);
+  reRollBtn.addEventListener("click", doRoll);
+
+  teacherName.addEventListener("input", () => {
+    state.teacherName = teacherName.value;
+    save();
+    renderPeople();
+    renderKPIs();
+  });
+
+  includeTeacher.addEventListener("change", () => {
+    state.includeTeacher = includeTeacher.checked;
+    badgeFair.textContent = state.includeTeacher ? "professor incluído ✅" : "professor fora do sorteio ⚠️";
+    save();
+    renderPeople();
+    renderKPIs();
+  });
+
+  applyPeopleBtn.addEventListener("click", () => {
+    const names = normalizeLines(peopleInput.value);
+    state.people = names;
+    save();
+    renderPeople();
+    renderKPIs();
+    bigResult.textContent = "✅ Lista aplicada";
+    smallResult.textContent = `Agora há ${poolPeople().length} pessoas no sorteio.`;
+  });
+
+  clearPeopleBtn.addEventListener("click", () => {
+    peopleInput.value = "";
+    state.people = [];
+    save();
+    renderPeople();
+    renderKPIs();
+  });
+
+  addTaskBtn.addEventListener("click", () => {
+    const title = (taskTitle.value || "").trim();
+    const note = (taskNote.value || "").trim();
+    if(!title){
+      bigResult.textContent = "⚠️ Escreva uma tarefa";
+      smallResult.textContent = "Dê um título curto (ex: ‘Limpar bancada do pHmetro’).";
+      return;
+    }
+    state.tasks.unshift({ id: cryptoId(), title, note, active:true });
+    taskTitle.value = "";
+    taskNote.value = "";
+    save();
+    renderTasks();
+    renderKPIs();
+    bigResult.textContent = "➕ Tarefa adicionada";
+    smallResult.textContent = "Ela entrou ativa no sorteio. (Você pode desligar no checkbox.)";
+  });
+
+  resetDefaultsBtn.addEventListener("click", () => {
+    // restaura tarefas padrão, mantém pessoas
+    state.tasks = defaultTasks();
+    save();
+    renderTasks();
+    renderKPIs();
+    bigResult.textContent = "↺ Padrão restaurado";
+    smallResult.textContent = "Tarefas padrão voltaram (você ainda pode adicionar as suas).";
+  });
+
+  clearHistoryBtn.addEventListener("click", () => {
+    state.history = [];
+    save();
+    renderHistory();
+    renderKPIs();
+  });
+
+  exportBtn.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dado-deveres-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 500);
+  });
+
+  importFile.addEventListener("change", async (ev) => {
+    const file = ev.target.files?.[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+
+      // validações leves
+      if(!obj || typeof obj !== "object") throw new Error("json inválido");
+      state = {
+        teacherName: String(obj.teacherName || ""),
+        includeTeacher: !!obj.includeTeacher,
+        people: Array.isArray(obj.people) ? obj.people.map(String) : [],
+        tasks: Array.isArray(obj.tasks) ? obj.tasks.map(t => ({
+          id: String(t.id || cryptoId()),
+          title: String(t.title || "Tarefa"),
+          note: String(t.note || ""),
+          active: !!t.active
+        })) : defaultTasks(),
+        mode: (obj.mode === "person" || obj.mode === "task" || obj.mode === "both") ? obj.mode : "both",
+        history: Array.isArray(obj.history) ? obj.history.slice(0,20) : []
+      };
+
+      save();
+      renderAll();
+      bigResult.textContent = "⬆️ Importado com sucesso";
+      smallResult.textContent = "Sua turma e tarefas voltaram. Pode rolar.";
+    }catch(e){
+      bigResult.textContent = "❌ Falha ao importar";
+      smallResult.textContent = "Esse arquivo não parece ser um backup do app.";
+    }finally{
+      importFile.value = "";
+    }
+  });
+
+  factoryResetBtn.addEventListener("click", () => {
+    state = {
+      teacherName: "",
+      includeTeacher: true,
+      people: [],
+      tasks: defaultTasks(),
+      mode: "both",
+      history: []
+    };
+    save();
+    renderAll();
+    bigResult.textContent = "💣 Reset total";
+    smallResult.textContent = "Tudo foi zerado. Cole nomes e pronto.";
+  });
+
+  // init
+  renderAll();
+
+})();
+</script>
+</body>
+</html>
